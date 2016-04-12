@@ -184,9 +184,9 @@ public class TestContainerAllocator {
    */
   @Test
   public void testAllocatorReleasesExtraContainers() throws Exception {
-    final SamzaResource resource = new SamzaResource(1,1000,"abc","id1");
-    final SamzaResource resource1 = new SamzaResource(1,1000,"abc","id2");
-    final SamzaResource resource2 = new SamzaResource(1,1000,"def","id3");
+    final SamzaResource resource = new SamzaResource(1, 1000, "abc", "id1");
+    final SamzaResource resource1 = new SamzaResource(1, 1000, "abc", "id2");
+    final SamzaResource resource2 = new SamzaResource(1, 1000, "def", "id3");
 
 
     // Set up our final asserts before starting the allocator thread

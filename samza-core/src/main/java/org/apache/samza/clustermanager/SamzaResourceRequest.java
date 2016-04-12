@@ -34,8 +34,7 @@ import java.util.UUID;
  *
  * //TODO: Define a SamzaResourceRequestBuilder API as specified in SAMZA-881
  */
-public class SamzaResourceRequest implements Comparable<SamzaResourceRequest>
-{
+public class SamzaResourceRequest implements Comparable<SamzaResourceRequest> {
   private static final Logger log = LoggerFactory.getLogger(SamzaResourceRequest.class);
 
   /**
@@ -64,13 +63,13 @@ public class SamzaResourceRequest implements Comparable<SamzaResourceRequest>
   private final long requestTimestampMs;
 
   public SamzaResourceRequest(int numCores, int memoryMB, String preferredHost, int expectedContainerID) {
-      this.numCores = numCores;
-      this.memoryMB = memoryMB;
-      this.preferredHost = preferredHost;
-      this.requestID = UUID.randomUUID().toString();
-      this.containerID = expectedContainerID;
-      this.requestTimestampMs = System.currentTimeMillis();
-      log.info("Resource Request created for {} on {} at {}", new Object[] {this.containerID, this.preferredHost, this.requestTimestampMs}  );
+    this.numCores = numCores;
+    this.memoryMB = memoryMB;
+    this.preferredHost = preferredHost;
+    this.requestID = UUID.randomUUID().toString();
+    this.containerID = expectedContainerID;
+    this.requestTimestampMs = System.currentTimeMillis();
+    log.info("Resource Request created for {} on {} at {}", new Object[] {this.containerID, this.preferredHost, this.requestTimestampMs});
   }
 
   public int getContainerID() {
@@ -82,31 +81,31 @@ public class SamzaResourceRequest implements Comparable<SamzaResourceRequest>
   }
 
   public String getRequestID() {
-      return requestID;
+    return requestID;
   }
 
   public int getNumCores() {
-      return numCores;
+    return numCores;
   }
 
   public String getPreferredHost() {
-      return preferredHost;
+    return preferredHost;
   }
 
   public int getMemoryMB() {
-      return memoryMB;
+    return memoryMB;
   }
 
   @Override
   public String toString() {
-      return "SamzaResourceRequest{" +
-              "numCores=" + numCores +
-              ", memoryMB=" + memoryMB +
-              ", preferredHost='" + preferredHost + '\'' +
-              ", requestID='" + requestID + '\'' +
-              ", containerID=" + containerID +
-              ", requestTimestampMs=" + requestTimestampMs +
-              '}';
+    return "SamzaResourceRequest{" +
+            "numCores=" + numCores +
+            ", memoryMB=" + memoryMB +
+            ", preferredHost='" + preferredHost + '\'' +
+            ", requestID='" + requestID + '\'' +
+            ", containerID=" + containerID +
+            ", requestTimestampMs=" + requestTimestampMs +
+            '}';
   }
 
   /**
@@ -115,10 +114,10 @@ public class SamzaResourceRequest implements Comparable<SamzaResourceRequest>
    */
   @Override
   public int compareTo(SamzaResourceRequest o) {
-      if(this.requestTimestampMs < o.requestTimestampMs)
-          return -1;
-      if(this.requestTimestampMs > o.requestTimestampMs)
-          return 1;
-      return 0;
+    if (this.requestTimestampMs < o.requestTimestampMs)
+      return -1;
+    if (this.requestTimestampMs > o.requestTimestampMs)
+      return 1;
+    return 0;
   }
 }

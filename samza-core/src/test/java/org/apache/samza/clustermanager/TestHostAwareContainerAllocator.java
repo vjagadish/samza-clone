@@ -1,4 +1,5 @@
- /* Licensed to the Apache Software Foundation (ASF) under one
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -50,13 +51,13 @@ public class TestHostAwareContainerAllocator {
   private final JobModelManager reader = getJobModelManager(1);
   private final SamzaAppState state = new SamzaAppState(reader);
   private HostAwareContainerAllocator containerAllocator;
-  private final int TIMEOUT_MS = 1000;
+  private final int timeoutMillis = 1000;
   private MockContainerRequestState requestState;
   private Thread allocatorThread;
 
   @Before
   public void setup() throws Exception {
-    containerAllocator = new HostAwareContainerAllocator(manager, TIMEOUT_MS, config, state);
+    containerAllocator = new HostAwareContainerAllocator(manager, timeoutMillis, config, state);
     requestState = new MockContainerRequestState(manager, true);
     Field requestStateField = containerAllocator.getClass().getSuperclass().getDeclaredField("resourceRequestState");
     requestStateField.setAccessible(true);
@@ -280,8 +281,8 @@ public class TestHostAwareContainerAllocator {
 
     allocatorThread.start();
 
-    SamzaResource resource0 = new SamzaResource(1,1000,"xyz","id1");
-    SamzaResource resource1 = new SamzaResource(1,1000,"zzz","id2");
+    SamzaResource resource0 = new SamzaResource(1, 1000, "xyz", "id1");
+    SamzaResource resource1 = new SamzaResource(1, 1000, "zzz", "id2");
     containerAllocator.addResource(resource0);
     containerAllocator.addResource(resource1);
     listener.verify();

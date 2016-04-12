@@ -71,14 +71,12 @@ import java.util.List;
  * joins or leaves the group. Will evolve more as we implement standalone and mesos.
  */
 
-public abstract class ClusterResourceManager
-{
+public abstract class ClusterResourceManager {
 
-  protected final Callback _callback;
+  protected final Callback clusterManagerCallback;
 
-  public ClusterResourceManager(Callback callback)
-  {
-    this._callback = callback;
+  public ClusterResourceManager(Callback callback) {
+    this.clusterManagerCallback = callback;
   }
 
   public abstract void start();
@@ -87,7 +85,7 @@ public abstract class ClusterResourceManager
    * Request resources for running container processes
    * @param resourceRequest the resourceRequest being made
    */
-  public abstract void requestResources (SamzaResourceRequest resourceRequest);
+  public abstract void requestResources(SamzaResourceRequest resourceRequest);
 
   /***
    * Remove a previously submitted resource request. The previous resource request may
@@ -97,14 +95,14 @@ public abstract class ClusterResourceManager
    *
    * @param request, the resource request that must be cancelled
    */
-  public abstract void cancelResourceRequest (SamzaResourceRequest request);
+  public abstract void cancelResourceRequest(SamzaResourceRequest request);
 
 
   /***
    * If the app cannot use the resource or wants to give up the resource, it can release them.
    * @param resource the resource to be released
    */
-  public abstract void releaseResources (SamzaResource resource);
+  public abstract void releaseResources(SamzaResource resource);
 
   /***
    * Requests the launch of a StreamProcessor with the specified context on the resource.
@@ -115,7 +113,7 @@ public abstract class ClusterResourceManager
    * @throws SamzaContainerLaunchException  when there's an error during the requesting launch.
    *
    */
-  public abstract void launchStreamProcessor (SamzaResource resource, CommandBuilder builder) throws SamzaContainerLaunchException;
+  public abstract void launchStreamProcessor(SamzaResource resource, CommandBuilder builder) throws SamzaContainerLaunchException;
 
 
   public abstract void stop(SamzaAppState.SamzaAppStatus status);
@@ -132,7 +130,7 @@ public abstract class ClusterResourceManager
      * to handle callbacks for resources that it did not request.
      * @param resources that are offered to the application
      */
-    void onResourcesAvailable (List<SamzaResource> resources);
+    void onResourcesAvailable(List<SamzaResource> resources);
 
     /***
      * This callback is invoked when resources are no longer available to the application. A
@@ -143,7 +141,7 @@ public abstract class ClusterResourceManager
      * The SamzaResourceStatus contains diagnostics on why the failure occured
      * @param resources statuses for the resources that were completed.
      */
-    void onResourcesCompleted (List<SamzaResourceStatus> resources);
+    void onResourcesCompleted(List<SamzaResourceStatus> resources);
 
     /***
      * This callback is invoked when there is an error in the ClusterResourceManager. This is
@@ -151,7 +149,7 @@ public abstract class ClusterResourceManager
      * ClusterResourceManager callbacks.
      * @param e  the underlying Throwable was thrown.
      */
-    void onError (Throwable e);
+    void onError(Throwable e);
   }
 }
 

@@ -36,27 +36,26 @@ package org.apache.samza.clustermanager;
  * resource preemption, disk failures on host.
  *
  */
-public final class SamzaResourceStatus
-{
+public final class SamzaResourceStatus {
   /**
    * Indicates that the StreamProcessor on the resource successfully completed.
    */
-  public static final int SUCCESS=0;
+  public static final int SUCCESS = 0;
   /**
    * Indicates the failure of the StreamProcessor running on the resource.
    */
-  public static final int ABORTED=-100;
+  public static final int ABORTED = -100;
   /**
    * Indicates that the resource was preempted (given to another processor) by
    * the cluster manager
    */
-  public static final int PREEMPTED=-102;
+  public static final int PREEMPTED = -102;
   /**
    * Indicates a disk failure in the host the resource is on.
    * Currently these are modelled after Yarn, could evolve as we add integrations with
    * many cluster managers.
    */
-  public static final int DISK_FAIL=-101;
+  public static final int DISK_FAIL = -101;
 
   private final String resourceID;
   private final String diagnostics;
@@ -64,29 +63,29 @@ public final class SamzaResourceStatus
 
 
   public SamzaResourceStatus(String resourceID, String diagnostics, int exitCode) {
-      this.resourceID = resourceID;
-      this.diagnostics = diagnostics;
-      this.exitCode = exitCode;
+    this.resourceID = resourceID;
+    this.diagnostics = diagnostics;
+    this.exitCode = exitCode;
   }
 
   public int getExitCode() {
-      return exitCode;
+    return exitCode;
   }
 
   public String getDiagnostics() {
-      return diagnostics;
+    return diagnostics;
   }
 
   public String getResourceID() {
-      return resourceID;
+    return resourceID;
   }
 
   @Override
   public String toString() {
-      return "SamzaResourceStatus{" +
-              "resourceID='" + resourceID + '\'' +
-              ", diagnostics='" + diagnostics + '\'' +
-              ", exitCode=" + exitCode +
-              '}';
+    return "SamzaResourceStatus{" +
+            "resourceID='" + resourceID + '\'' +
+            ", diagnostics='" + diagnostics + '\'' +
+            ", exitCode=" + exitCode +
+            '}';
   }
 }

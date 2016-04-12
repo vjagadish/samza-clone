@@ -102,18 +102,17 @@ public abstract class AbstractContainerAllocator implements Runnable {
    */
   @Override
   public void run() {
-    while(isRunning) {
+    while (isRunning) {
       try {
         assignResourceRequests();
         // Release extra resources and update the entire system's state
         resourceRequestState.releaseExtraResources();
+
         Thread.sleep(allocatorSleepIntervalMs);
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
         log.warn("Got InterruptedException in AllocatorThread.", e);
         Thread.currentThread().interrupt();
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         log.error("Got unknown Exception in AllocatorThread.", e);
       }
     }

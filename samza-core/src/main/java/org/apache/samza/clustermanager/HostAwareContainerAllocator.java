@@ -59,7 +59,7 @@ public class HostAwareContainerAllocator extends AbstractContainerAllocator {
   @Override
   public void assignResourceRequests()  {
     while (hasPendingRequest()) {
-      SamzaResourceRequest request = peekPendingRequest();;
+      SamzaResourceRequest request = peekPendingRequest();
       log.info("Handling request: " + request.getContainerID() + " " + request.getRequestTimestampMs() + " " + request.getPreferredHost());
       String preferredHost = request.getPreferredHost();
       int containerID = request.getContainerID();
@@ -77,11 +77,10 @@ public class HostAwareContainerAllocator extends AbstractContainerAllocator {
         boolean expired = requestExpired(request);
         boolean resourceAvailableOnAnyHost = hasAllocatedResource(ResourceRequestState.ANY_HOST);
 
-        if(expired && resourceAvailableOnAnyHost) {
+        if (expired && resourceAvailableOnAnyHost) {
           log.info("Request expired. running on ANY_HOST");
           runStreamProcessor(request, ResourceRequestState.ANY_HOST);
-        }
-        else {
+        } else {
           log.info("Either the request timestamp {} is greater than resource request timeout {}ms or we couldn't "
                   + "find any free allocated resources in the buffer. Breaking out of loop.",
               request.getRequestTimestampMs(), requestTimeout);
@@ -99,7 +98,7 @@ public class HostAwareContainerAllocator extends AbstractContainerAllocator {
   private boolean requestExpired(SamzaResourceRequest request) {
     long currTime = System.currentTimeMillis();
     boolean requestExpired =  currTime - request.getRequestTimestampMs() > requestTimeout;
-    if(requestExpired == true) {
+    if (requestExpired) {
       log.info("Request {} with currTime {} has expired", request, currTime);
     }
     return requestExpired;

@@ -19,14 +19,12 @@
 
 package org.apache.samza.clustermanager;
 
-import org.apache.samza.coordinator.JobModelManager;
 
 /**
  * A factory to build a {@link ClusterResourceManager}
  * //TODO: move the class to Samza-API?
  */
-public interface ResourceManagerFactory
-{
+public interface ResourceManagerFactory {
   /**
    * Return a {@link ClusterResourceManager }
    * @param callback to be registered with the {@link ClusterResourceManager}

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- package org.apache.samza.clustermanager;
+package org.apache.samza.clustermanager;
 
 import org.apache.samza.SamzaException;
 import org.apache.samza.config.ClusterManagerConfig;
@@ -109,23 +109,14 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
     this.clusterResourceManager = factory.getClusterResourceManager(this, state);
     this.metrics = new ContainerProcessManagerMetrics(config, state, registry);
 
-
     if (this.hostAffinityEnabled) {
-        this.containerAllocator = new HostAwareContainerAllocator(
-            clusterResourceManager,
-                clusterManagerConfig.getContainerRequestTimeout(),
-                config,
-                state
-        );
-      } else {
-        this.containerAllocator = new ContainerAllocator(
-            clusterResourceManager,
-                config,
-                state);
-      }
+      this.containerAllocator = new HostAwareContainerAllocator(clusterResourceManager, clusterManagerConfig.getContainerRequestTimeout(), config, state);
+    } else {
+      this.containerAllocator = new ContainerAllocator(clusterResourceManager, config, state);
+    }
 
-      this.allocatorThread = new Thread(this.containerAllocator, "Container Allocator Thread");
-      log.info("finished initialization of samza task manager");
+    this.allocatorThread = new Thread(this.containerAllocator, "Container Allocator Thread");
+    log.info("finished initialization of samza task manager");
 
   }
 
@@ -146,17 +137,9 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
 
 
     if (this.hostAffinityEnabled) {
-      this.containerAllocator = new HostAwareContainerAllocator(
-          clusterResourceManager,
-          clusterManagerConfig.getContainerRequestTimeout(),
-          config,
-          state
-      );
+      this.containerAllocator = new HostAwareContainerAllocator(clusterResourceManager, clusterManagerConfig.getContainerRequestTimeout(), config, state);
     } else {
-      this.containerAllocator = new ContainerAllocator(
-          clusterResourceManager,
-          config,
-          state);
+      this.containerAllocator = new ContainerAllocator(clusterResourceManager, config, state);
     }
 
     this.allocatorThread = new Thread(this.containerAllocator, "Container Allocator Thread");
@@ -165,219 +148,217 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
   }
 
   public boolean shouldShutdown() {
-      log.info(" TaskManager state: Too many FailedContainers: {} No. Completed containers: {} Num Configured containers: {}" +
-          " AllocatorThread liveness: {} ", new Object[]{tooManyFailedContainers, state.completedContainers.get(), state.containerCount, allocatorThread.isAlive()});
+    log.info(" TaskManager state: Too many FailedContainers: {} No. Completed containers: {} Num Configured containers: {}" +
+      " AllocatorThread liveness: {} ", new Object[]{tooManyFailedContainers, state.completedContainers.get(), state.containerCount, allocatorThread.isAlive()});
 
-        return tooManyFailedContainers || state.completedContainers.get() == state.containerCount.get() || !allocatorThread.isAlive() || exceptionOccurred;
+    return tooManyFailedContainers || state.completedContainers.get() == state.containerCount.get() || !allocatorThread.isAlive() || exceptionOccurred;
+  }
+
+  public void start() {
+    metrics.start();
+
+    log.info("Starting Container Process Manager");
+    clusterResourceManager.start();
+
+    log.info("Starting the Samza task manager");
+    final int containerCount = jobConfig.getContainerCount();
+
+    state.containerCount.set(containerCount);
+    state.neededResources.set(containerCount);
+
+    // Request initial set of containers
+    Map<Integer, String> containerToHostMapping = state.jobModelManager.jobModel().getAllContainerLocality();
+
+    containerAllocator.requestResources(containerToHostMapping);
+
+    // Start container allocator thread
+    log.info("Starting the container allocator thread");
+    allocatorThread.start();
+  }
+
+  public void stop() {
+    log.info("Invoked stop of the Samza container process manager");
+
+    // Shutdown allocator thread
+    containerAllocator.stop();
+    try {
+      allocatorThread.join();
+    } catch (InterruptedException ie) {
+      log.error("Allocator Thread join() threw an interrupted exception", ie);
+      Thread.currentThread().interrupt();
     }
 
-    public void start() {
-      metrics.start();
-
-      log.info("Starting Container Process Manager");
-      clusterResourceManager.start();
-
-      log.info("Starting the Samza task manager");
-      final int containerCount = jobConfig.getContainerCount();
-
-      state.containerCount.set(containerCount);
-      state.neededResources.set(containerCount);
-
-      // Request initial set of containers
-      Map<Integer, String> containerToHostMapping = state.jobModelManager.jobModel().getAllContainerLocality();
-
-      containerAllocator.requestResources(containerToHostMapping);
-
-      // Start container allocator thread
-      log.info("Starting the container allocator thread");
-      allocatorThread.start();
-    }
-
-    public void stop() {
-      log.info("Invoked stop of the Samza container process manager");
-
-      // Shutdown allocator thread
-      containerAllocator.stop() ;
+    if (metrics != null) {
       try {
-          allocatorThread.join();
-      } catch (InterruptedException ie) {
-        log.error("Allocator Thread join() threw an interrupted exception", ie);
-        Thread.currentThread().interrupt();
+        metrics.stop();
+      } catch (Throwable e) {
+        log.error("Exception while stopping metrics {}", e);
       }
-
-      if (metrics != null) {
-        try {
-          metrics.stop();
-        }
-        catch(Throwable e) {
-          log.error("Exception while stopping metrics {}", e);
-        }
-        log.info("Stopped metrics reporters");
-      }
-
-      if (clusterResourceManager != null) {
-        try {
-          clusterResourceManager.stop(state.status);
-        }
-        catch(Throwable e) {
-          log.error("Exception while stopping cluster resource manager {}", e);
-        }
-        log.info("Stopped cluster resource manager");
-      }
-
-      log.info("Finished stop of Container process manager");
-
+      log.info("Stopped metrics reporters");
     }
 
-    public void onResourceAllocated(SamzaResource container) {
-      log.info("Container allocated from RM on " + container.getHost());
-      containerAllocator.addResource(container);
+    if (clusterResourceManager != null) {
+      try {
+        clusterResourceManager.stop(state.status);
+      } catch (Throwable e) {
+        log.error("Exception while stopping cluster resource manager {}", e);
+      }
+      log.info("Stopped cluster resource manager");
     }
 
-    /**
-     * This methods handles the onResourceCompleted callback from the RM. Based on the ContainerExitStatus, it decides
-     * whether a container that exited is marked as complete or failure.
-     * @param containerStatus of the resource that completed
-     */
-    public void onResourceCompleted(SamzaResourceStatus containerStatus) {
-      String containerIdStr = containerStatus.getResourceID();
-      int containerId = -1;
-      for(Map.Entry<Integer, SamzaResource> entry: state.runningContainers.entrySet()) {
-          if(entry.getValue().getResourceID().equals(containerStatus.getResourceID())) {
-              log.info("Matching container ID found " + entry.getKey() + " " + entry.getValue() );
+    log.info("Finished stop of Container process manager");
 
-              containerId = entry.getKey();
-              break;
+  }
+
+  public void onResourceAllocated(SamzaResource container) {
+    log.info("Container allocated from RM on " + container.getHost());
+    containerAllocator.addResource(container);
+  }
+
+  /**
+   * This methods handles the onResourceCompleted callback from the RM. Based on the ContainerExitStatus, it decides
+   * whether a container that exited is marked as complete or failure.
+   * @param containerStatus of the resource that completed
+   */
+  public void onResourceCompleted(SamzaResourceStatus containerStatus) {
+    String containerIdStr = containerStatus.getResourceID();
+    int containerId = -1;
+    for (Map.Entry<Integer, SamzaResource> entry: state.runningContainers.entrySet()) {
+      if (entry.getValue().getResourceID().equals(containerStatus.getResourceID())) {
+        log.info("Matching container ID found " + entry.getKey() + " " + entry.getValue());
+
+        containerId = entry.getKey();
+        break;
+      }
+    }
+    if (containerId == -1) {
+      log.info("No matching container id found for " + containerStatus.toString());
+    }
+    state.runningContainers.remove(containerId);
+
+    int exitStatus = containerStatus.getExitCode();
+    switch (exitStatus) {
+      case SamzaResourceStatus.SUCCESS:
+        log.info("Container {} completed successfully.", containerIdStr);
+
+        state.completedContainers.incrementAndGet();
+
+        if (containerId != -1) {
+          state.finishedContainers.add(containerId);
+          containerFailures.remove(containerId);
+        }
+
+        if (state.completedContainers.get() == state.containerCount.get()) {
+          log.info("Setting job status to SUCCEEDED, since all containers have been marked as completed.");
+          state.status = SamzaAppState.SamzaAppStatus.SUCCEEDED;
+        }
+        break;
+
+      case SamzaResourceStatus.DISK_FAIL:
+      case SamzaResourceStatus.ABORTED:
+      case SamzaResourceStatus.PREEMPTED:
+        log.info("Got an exit code of {}. This means that container {} was "
+                  + "killed by YARN, either due to being released by the application "
+                  + "master or being 'lost' due to node failures etc. or due to preemption by the RM",
+                exitStatus,
+                containerIdStr);
+
+        state.releasedContainers.incrementAndGet();
+
+        // If this container was assigned some partitions (a containerId), then
+        // clean up, and request a refactor container for the tasks. This only
+        // should happen if the container was 'lost' due to node failure, not
+        // if the AM released the container.
+        if (containerId != -1) {
+          log.info("Released container {} was assigned task group ID {}. Requesting a refactor container for the task group.", containerIdStr, containerId);
+
+          state.neededResources.incrementAndGet();
+          state.jobHealthy.set(false);
+
+          // request a container on refactor host
+          containerAllocator.requestResource(containerId, ResourceRequestState.ANY_HOST);
+        }
+        break;
+
+      default:
+        // TODO: Handle failure more intelligently. Should track NodeFailures!
+        log.info("Container failed for some reason. Let's start it again");
+        log.info("Container " + containerIdStr + " failed with exit code . " + exitStatus + " - " + containerStatus.getDiagnostics() + " containerID is " + containerId);
+
+        state.failedContainers.incrementAndGet();
+        state.failedContainersStatus.put(containerIdStr, containerStatus);
+        state.jobHealthy.set(false);
+
+        if (containerId != -1) {
+          state.neededResources.incrementAndGet();
+          // Find out previously running container location
+          String lastSeenOn = state.jobModelManager.jobModel().getContainerToHostValue(containerId, SetContainerHostMapping.HOST_KEY);
+          if (!hostAffinityEnabled || lastSeenOn == null) {
+            lastSeenOn = ResourceRequestState.ANY_HOST;
           }
-      }
-      if(containerId == -1) {
-        log.info("No matching container id found for " + containerStatus.toString());
-      }
-      state.runningContainers.remove(containerId);
+          log.info("Container was last seen on " + lastSeenOn);
+          // A container failed for an unknown reason. Let's check to see if
+          // we need to shutdown the whole app master if too many container
+          // failures have happened. The rules for failing are that the
+          // failure count for a task group id must be > the configured retry
+          // count, and the last failure (the one prior to this one) must have
+          // happened less than retry window ms ago. If retry count is set to
+          // 0, the app master will fail on any container failure. If the
+          // retry count is set to a number < 0, a container failure will
+          // never trigger an app master failure.
+          int retryCount = clusterManagerConfig.getContainerRetryCount();
+          int retryWindowMs = clusterManagerConfig.getContainerRetryWindowMs();
 
-      int exitStatus = containerStatus.getExitCode();
-      switch(exitStatus) {
-          case SamzaResourceStatus.SUCCESS:
-              log.info("Container {} completed successfully.", containerIdStr);
+          if (retryCount == 0) {
+            log.error("Container ID {} ({}) failed, and retry count is set to 0, so shutting down the application master, and marking the job as failed.", containerId, containerIdStr);
 
-              state.completedContainers.incrementAndGet();
+            tooManyFailedContainers = true;
+          } else if (retryCount > 0) {
+            int currentFailCount;
+            long lastFailureTime;
+            if (containerFailures.containsKey(containerId)) {
+              ResourceFailure failure = containerFailures.get(containerId);
+              currentFailCount = failure.getCount() + 1;
+              lastFailureTime = failure.getLastFailure();
+            } else {
+              currentFailCount = 1;
+              lastFailureTime = 0L;
+            }
+            if (currentFailCount >= retryCount) {
+              long lastFailureMsDiff = System.currentTimeMillis() - lastFailureTime;
 
-              if (containerId != -1) {
-                  state.finishedContainers.add(containerId);
-                  containerFailures.remove(containerId);
+              if (lastFailureMsDiff < retryWindowMs) {
+                log.error("Container ID " + containerId + "(" + containerIdStr + ") has failed " + currentFailCount +
+                        " times, with last failure " + lastFailureMsDiff + "ms ago. This is greater than retry count of " +
+                        retryCount + " and window of " + retryWindowMs + "ms , so shutting down the application master, and marking the job as failed.");
+
+                // We have too many failures, and we're within the window
+                // boundary, so reset shut down the app master.
+                tooManyFailedContainers = true;
+                state.status = SamzaAppState.SamzaAppStatus.FAILED;
+              } else {
+                log.info("Resetting fail count for container ID {} back to 1, since last container failure ({}) for " +
+                        "this container ID was outside the bounds of the retry window.", containerId, containerIdStr);
+
+                // Reset counter back to 1, since the last failure for this
+                // container happened outside the window boundary.
+                containerFailures.put(containerId, new ResourceFailure(1, System.currentTimeMillis()));
               }
+            } else {
+              log.info("Current fail count for container ID {} is {}.", containerId, currentFailCount);
+              containerFailures.put(containerId, new ResourceFailure(currentFailCount, System.currentTimeMillis()));
+            }
+          }
 
-              if (state.completedContainers.get() == state.containerCount.get()) {
-                  log.info("Setting job status to SUCCEEDED, since all containers have been marked as completed.");
-                  state.status = SamzaAppState.SamzaAppStatus.SUCCEEDED;
-              }
-              break;
+          if (!tooManyFailedContainers) {
+            log.info("Requesting a refactor container ");
+            // Request a refactor container
+            containerAllocator.requestResource(containerId, lastSeenOn);
+          }
+        }
 
-          case SamzaResourceStatus.DISK_FAIL:
-          case SamzaResourceStatus.ABORTED:
-          case SamzaResourceStatus.PREEMPTED:
-              log.info("Got an exit code of {}. This means that container {} was "
-                              + "killed by YARN, either due to being released by the application "
-                              + "master or being 'lost' due to node failures etc. or due to preemption by the RM",
-                      exitStatus,
-                      containerIdStr);
-
-              state.releasedContainers.incrementAndGet();
-
-              // If this container was assigned some partitions (a containerId), then
-              // clean up, and request a refactor container for the tasks. This only
-              // should happen if the container was 'lost' due to node failure, not
-              // if the AM released the container.
-              if (containerId != -1) {
-                  log.info("Released container {} was assigned task group ID {}. Requesting a refactor container for the task group.", containerIdStr, containerId);
-
-                  state.neededResources.incrementAndGet();
-                  state.jobHealthy.set(false);
-
-                  // request a container on refactor host
-                  containerAllocator.requestResource(containerId, ResourceRequestState.ANY_HOST);
-              }
-              break;
-
-          default:
-              // TODO: Handle failure more intelligently. Should track NodeFailures!
-              log.info("Container failed for some reason. Let's start it again");
-              log.info("Container " + containerIdStr + " failed with exit code . " + exitStatus + " - " + containerStatus.getDiagnostics() + " containerID is " + containerId);
-
-              state.failedContainers.incrementAndGet();
-              state.failedContainersStatus.put(containerIdStr, containerStatus);
-              state.jobHealthy.set(false);
-
-              if(containerId != -1) {
-                  state.neededResources.incrementAndGet();
-                  // Find out previously running container location
-                  String lastSeenOn = state.jobModelManager.jobModel().getContainerToHostValue(containerId, SetContainerHostMapping.HOST_KEY);
-                  if (!hostAffinityEnabled || lastSeenOn == null) {
-                      lastSeenOn = ResourceRequestState.ANY_HOST;
-                  }
-                  log.info("Container was last seen on " + lastSeenOn );
-                  // A container failed for an unknown reason. Let's check to see if
-                  // we need to shutdown the whole app master if too many container
-                  // failures have happened. The rules for failing are that the
-                  // failure count for a task group id must be > the configured retry
-                  // count, and the last failure (the one prior to this one) must have
-                  // happened less than retry window ms ago. If retry count is set to
-                  // 0, the app master will fail on any container failure. If the
-                  // retry count is set to a number < 0, a container failure will
-                  // never trigger an app master failure.
-                  int retryCount = clusterManagerConfig.getContainerRetryCount();
-                  int retryWindowMs = clusterManagerConfig.getContainerRetryWindowMs();
-
-                  if (retryCount == 0) {
-                      log.error("Container ID {} ({}) failed, and retry count is set to 0, so shutting down the application master, and marking the job as failed.", containerId, containerIdStr);
-
-                      tooManyFailedContainers = true;
-                  } else if (retryCount > 0) {
-                      int currentFailCount;
-                      long lastFailureTime;
-                      if(containerFailures.containsKey(containerId)) {
-                          ResourceFailure failure = containerFailures.get(containerId);
-                          currentFailCount = failure.getCount() + 1;
-                          lastFailureTime = failure.getLastFailure();
-                      } else {
-                          currentFailCount = 1;
-                          lastFailureTime = 0L;
-                      }
-                      if (currentFailCount >= retryCount) {
-                          long lastFailureMsDiff = System.currentTimeMillis() - lastFailureTime;
-
-                          if (lastFailureMsDiff < retryWindowMs) {
-                              log.error("Container ID " + containerId + "(" + containerIdStr + ") has failed " + currentFailCount +
-                                      " times, with last failure " + lastFailureMsDiff + "ms ago. This is greater than retry count of " +
-                                      retryCount + " and window of " + retryWindowMs + "ms , so shutting down the application master, and marking the job as failed.");
-
-                              // We have too many failures, and we're within the window
-                              // boundary, so reset shut down the app master.
-                              tooManyFailedContainers = true;
-                              state.status = SamzaAppState.SamzaAppStatus.FAILED;
-                          } else {
-                              log.info("Resetting fail count for container ID {} back to 1, since last container failure ({}) for " +
-                                      "this container ID was outside the bounds of the retry window.", containerId, containerIdStr);
-
-                              // Reset counter back to 1, since the last failure for this
-                              // container happened outside the window boundary.
-                              containerFailures.put(containerId, new ResourceFailure(1, System.currentTimeMillis()));
-                          }
-                      } else {
-                          log.info("Current fail count for container ID {} is {}.", containerId, currentFailCount);
-                          containerFailures.put(containerId, new ResourceFailure(currentFailCount, System.currentTimeMillis()));
-                      }
-                  }
-
-                  if (!tooManyFailedContainers) {
-                      log.info("Requesting a refactor container ");
-                      // Request a refactor container
-                      containerAllocator.requestResource(containerId, lastSeenOn);
-                  }
-              }
-
-      }
     }
+  }
 
   @Override
   public void onResourcesAvailable(List<SamzaResource> resources) {
@@ -411,23 +392,19 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
    * @param clusterManagerConfig, the cluster manager config to parse.
    *
    */
-  private ResourceManagerFactory getContainerProcessManagerFactory(final ClusterManagerConfig clusterManagerConfig)
-  {
+  private ResourceManagerFactory getContainerProcessManagerFactory(final ClusterManagerConfig clusterManagerConfig) {
     final String containerManagerFactoryClass = clusterManagerConfig.getContainerManagerClass();
     final ResourceManagerFactory factory;
 
     try {
       factory = (ResourceManagerFactory) Class.forName(containerManagerFactoryClass).newInstance();
-    }
-    catch (InstantiationException e) {
+    } catch (InstantiationException e) {
       log.error("Instantiation exception when creating ContainerManager", e);
       throw new SamzaException(e);
-    }
-    catch (IllegalAccessException e) {
+    } catch (IllegalAccessException e) {
       log.error("Illegal access exception when creating ContainerManager", e);
       throw new SamzaException(e);
-    }
-    catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException e) {
       log.error("ClassNotFound Exception when creating ContainerManager", e);
       throw new SamzaException(e);
     }

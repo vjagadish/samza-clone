@@ -95,9 +95,9 @@ public class TestContainerProcessManager {
       containers.put(i, container);
     }
     Map<Integer, Map<String, String>> localityMap = new HashMap<>();
-    localityMap.put(0, new HashMap<String, String>(){{
-      put(SetContainerHostMapping.HOST_KEY, "abc");
-    }
+    localityMap.put(0, new HashMap<String, String>() { {
+        put(SetContainerHostMapping.HOST_KEY, "abc");
+      }
     });
     LocalityManager mockLocalityManager = mock(LocalityManager.class);
     when(mockLocalityManager.readContainerLocality()).thenReturn(localityMap);
@@ -238,7 +238,7 @@ public class TestContainerProcessManager {
 
     assertFalse(taskManager.shouldShutdown());
 
-    taskManager.onResourceCompleted(new SamzaResourceStatus("123","diagnostics",SamzaResourceStatus.SUCCESS));
+    taskManager.onResourceCompleted(new SamzaResourceStatus("123", "diagnostics", SamzaResourceStatus.SUCCESS));
 
 
     assertTrue(taskManager.shouldShutdown());
@@ -276,7 +276,7 @@ public class TestContainerProcessManager {
     assertEquals(1, allocator.getContainerRequestState().numPendingRequests());
 
 
-    SamzaResource container = new SamzaResource(1, 1024, "abc","id0");
+    SamzaResource container = new SamzaResource(1, 1024, "abc", "id0");
     taskManager.onResourceAllocated(container);
 
     // Allow container to run and update state
@@ -350,7 +350,7 @@ public class TestContainerProcessManager {
     assertFalse(taskManager.shouldShutdown());
     assertEquals(1, allocator.getContainerRequestState().numPendingRequests());
 
-    SamzaResource container = new SamzaResource(1,1000,"abc","id1");
+    SamzaResource container = new SamzaResource(1, 1000, "abc", "id1");
     taskManager.onResourceAllocated(container);
 
     // Allow container to run and update state
@@ -391,15 +391,15 @@ public class TestContainerProcessManager {
   }
 
   @Test
-  public void testAppMasterWithFwk () {
+  public void testAppMasterWithFwk() {
     ContainerProcessManager taskManager = new ContainerProcessManager(
-        new MapConfig(config),
-        state,
-        new MetricsRegistryMap(),
-        manager
+      new MapConfig(config),
+      state,
+      new MetricsRegistryMap(),
+      manager
     );
     taskManager.start();
-    SamzaResource container2 = new SamzaResource(1, 1024, "", "id0" );
+    SamzaResource container2 = new SamzaResource(1, 1024, "", "id0");
     assertFalse(taskManager.shouldShutdown());
     taskManager.onResourceAllocated(container2);
 

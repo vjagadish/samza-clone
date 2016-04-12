@@ -27,8 +27,7 @@ import java.net.URL;
 
 public class MockHttpServer extends HttpServer {
 
-  public MockHttpServer(String rootPath, int port, String resourceBasePath, ServletHolder defaultHolder)
-  {
+  public MockHttpServer(String rootPath, int port, String resourceBasePath, ServletHolder defaultHolder) {
     super(rootPath, port, resourceBasePath, defaultHolder);
     start();
   }
@@ -45,7 +44,7 @@ public class MockHttpServer extends HttpServer {
 
   @Override
   public URL getUrl() {
-    if(running()) {
+    if (running()) {
       try {
         return new URL("http://localhost:12345/");
       } catch (MalformedURLException mue) {

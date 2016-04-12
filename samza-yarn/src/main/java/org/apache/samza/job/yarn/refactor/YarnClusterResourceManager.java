@@ -157,7 +157,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
     lifecycle.onInit();
 
     if(lifecycle.shouldShutdown()) {
-      _callback.onError(new SamzaException("Invalid resource request."));
+      clusterManagerCallback.onError(new SamzaException("Invalid resource request."));
     }
 
     log.info("Finished starting YarnContainerManager");
@@ -343,7 +343,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
         }
       }
     }
-    _callback.onResourcesCompleted(samzaResrcStatuses);
+    clusterManagerCallback.onResourcesCompleted(samzaResrcStatuses);
   }
 
   /**
@@ -365,7 +365,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
           allocatedResources.put(resource, container);
           resources.add(resource);
       }
-      _callback.onResourcesAvailable(resources);
+      clusterManagerCallback.onResourcesAvailable(resources);
   }
 
   @Override
@@ -392,7 +392,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
   @Override
   public void onError(Throwable e) {
     log.error("Exception in the Yarn callback {}", e);
-    _callback.onError(e);
+    clusterManagerCallback.onError(e);
   }
 
 }

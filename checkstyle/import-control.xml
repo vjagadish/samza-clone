@@ -47,6 +47,10 @@
         <allow pkg="org.apache.samza.coordinator" />
         <allow pkg="org.apache.samza.job" />
         <allow pkg="org.apache.samza.metrics" />
+        <allow pkg="org.apache.samza.serializers" />
+        <allow pkg="org.apache.samza.container" />
+        <allow pkg="org.eclipse.jetty.servlet" />
+
 
         <allow class="org.apache.samza.Partition" />
     </subpackage>

@@ -28,8 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class MockClusterResourceManager extends ClusterResourceManager
-{
+public class MockClusterResourceManager extends ClusterResourceManager {
   Set<SamzaResource> releasedResources = new HashSet<>();
   List<SamzaResource> resourceRequests = new ArrayList<>();
   List<SamzaResourceRequest> cancelledRequests = new ArrayList<>();
@@ -64,7 +63,7 @@ public class MockClusterResourceManager extends ClusterResourceManager
 
   @Override
   public void launchStreamProcessor(SamzaResource resource, CommandBuilder builder) throws SamzaContainerLaunchException {
-    if(nextException != null) {
+    if (nextException != null) {
       throw new SamzaContainerLaunchException(nextException);
     }
     launchedResources.add(resource);

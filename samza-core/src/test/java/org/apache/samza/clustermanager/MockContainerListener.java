@@ -19,9 +19,6 @@
 
 package org.apache.samza.clustermanager;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertTrue;
 
 public class MockContainerListener {

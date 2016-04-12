@@ -39,6 +39,6 @@ public class MockClusterResourceManagerCallback implements ClusterResourceManage
 
   @Override
   public void onError(Throwable e) {
-    error=e;
+    error = e;
   }
 }

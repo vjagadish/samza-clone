@@ -137,9 +137,9 @@ public class ResourceRequestState {
                   "The number of containers already allocated on {} is greater than what was " +
                       "requested, which is {}. Hence, saving the samzaResource {} in the buffer for ANY_HOST",
                   new Object[]{
-                      hostName,
-                      requestCountOnThisHost,
-                      samzaResource.getResourceID()
+                    hostName,
+                    requestCountOnThisHost,
+                    samzaResource.getResourceID()
                   }
               );
               addToAllocatedResourceList(ANY_HOST, samzaResource);
@@ -261,8 +261,8 @@ public class ResourceRequestState {
    */
   private List<String> getAllocatedHosts() {
     List<String> hostKeys = new ArrayList<String>();
-    for(Map.Entry<String, List<SamzaResource>> entry: allocatedResources.entrySet()) {
-      if(entry.getValue().size() > 0) {
+    for (Map.Entry<String, List<SamzaResource>> entry: allocatedResources.entrySet()) {
+      if (entry.getValue().size() > 0) {
         hostKeys.add(entry.getKey());
       }
     }
@@ -276,8 +276,7 @@ public class ResourceRequestState {
    * @return      the first {@link SamzaResource} allocated for the specified host or {@code null} if there isn't one.
    */
 
-  public SamzaResource peekResource(String host)
-  {
+  public SamzaResource peekResource(String host) {
     synchronized (lock) {
       List<SamzaResource> resourcesOnTheHost = this.allocatedResources.get(host);
 

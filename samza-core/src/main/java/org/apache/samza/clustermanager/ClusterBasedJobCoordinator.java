@@ -134,7 +134,7 @@ public class ClusterBasedJobCoordinator {
    *
    */
   public void run() {
-    if(!isStarted.compareAndSet(false, true)){
+    if (!isStarted.compareAndSet(false, true)) {
       log.info("Attempting to start an already started job coordinator. ");
       return;
     }
@@ -158,19 +158,16 @@ public class ClusterBasedJobCoordinator {
       while (!containerProcessManager.shouldShutdown() && !isInterrupted) {
         try {
           Thread.sleep(jobCoordinatorSleepInterval);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
           isInterrupted = true;
           log.error("Interrupted in job coordinator loop {} ", e);
           Thread.currentThread().interrupt();
         }
       }
-    }
-    catch (Throwable e) {
+    } catch (Throwable e) {
       log.error("Exception thrown in the JobCoordinator loop {} ", e);
       throw new SamzaException(e);
-    }
-    finally {
+    } finally {
       onShutDown();
     }
   }
@@ -183,8 +180,7 @@ public class ClusterBasedJobCoordinator {
     if (containerProcessManager != null) {
       try {
         containerProcessManager.stop();
-      }
-      catch(Throwable e) {
+      } catch (Throwable e) {
         log.error("Exception while stopping task manager {}", e);
       }
       log.info("Stopped task manager");
@@ -194,14 +190,13 @@ public class ClusterBasedJobCoordinator {
       try {
         jmxServer.stop();
         log.info("Stopped Jmx Server");
-      }
-      catch(Throwable e) {
+      } catch (Throwable e) {
         log.error("Exception while stopping jmx server {}", e);
       }
     }
   }
 
-  public JobModelManager buildJobModelReader (Config coordinatorSystemConfig, MetricsRegistryMap registry)  {
+  public JobModelManager buildJobModelReader(Config coordinatorSystemConfig, MetricsRegistryMap registry)  {
     JobModelManager jobModelManager = JobModelManager.apply(coordinatorSystemConfig, registry);
     return jobModelManager;
   }
@@ -212,13 +207,13 @@ public class ClusterBasedJobCoordinator {
    * The entry point for the {@link ClusterBasedJobCoordinator}
    * @param args args
    */
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     Config coordinatorSystemConfig = null;
-    final String COORDINATOR_SYSTEM_ENV = System.getenv(ShellCommandConfig.ENV_COORDINATOR_SYSTEM_CONFIG());
+    final String coordinatorSystemEnv = System.getenv(ShellCommandConfig.ENV_COORDINATOR_SYSTEM_CONFIG());
     try {
       //Read and parse the coordinator system config.
-      log.info("Parsing coordinator system config {}", COORDINATOR_SYSTEM_ENV);
-      coordinatorSystemConfig = new MapConfig(SamzaObjectMapper.getObjectMapper().readValue(COORDINATOR_SYSTEM_ENV, Config.class));
+      log.info("Parsing coordinator system config {}", coordinatorSystemEnv);
+      coordinatorSystemConfig = new MapConfig(SamzaObjectMapper.getObjectMapper().readValue(coordinatorSystemEnv, Config.class));
     } catch (IOException e) {
       log.error("Exception while reading coordinator stream config {}", e);
       throw new SamzaException(e);

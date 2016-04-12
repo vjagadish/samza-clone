@@ -25,7 +25,7 @@ import java.util.Queue;
 
 
 public class MockContainerRequestState extends ResourceRequestState {
-  private final List<MockContainerListener> _mockContainerListeners = new ArrayList<MockContainerListener>();
+  private final List<MockContainerListener> mockContainerListeners = new ArrayList<MockContainerListener>();
   private int numAddedContainers = 0;
   private int numReleasedContainers = 0;
   private int numAssignedContainers = 0;
@@ -43,7 +43,7 @@ public class MockContainerRequestState extends ResourceRequestState {
     numAssignedContainers++;
     assignedRequests.add(request);
 
-    for (MockContainerListener listener : _mockContainerListeners) {
+    for (MockContainerListener listener : mockContainerListeners) {
       listener.postUpdateRequestStateAfterAssignment(numAssignedContainers);
     }
   }
@@ -53,7 +53,7 @@ public class MockContainerRequestState extends ResourceRequestState {
     super.addResource(container);
 
     numAddedContainers++;
-    for (MockContainerListener listener : _mockContainerListeners) {
+    for (MockContainerListener listener : mockContainerListeners) {
       listener.postAddContainer(container, numAddedContainers);
     }
   }
@@ -62,7 +62,7 @@ public class MockContainerRequestState extends ResourceRequestState {
   public synchronized int releaseExtraResources() {
     numReleasedContainers += super.releaseExtraResources();
 
-    for (MockContainerListener listener : _mockContainerListeners) {
+    for (MockContainerListener listener : mockContainerListeners) {
       listener.postReleaseContainers(numReleasedContainers);
     }
 
@@ -74,18 +74,18 @@ public class MockContainerRequestState extends ResourceRequestState {
     super.releaseUnstartableContainer(container);
 
     numReleasedContainers += 1;
-    for (MockContainerListener listener : _mockContainerListeners) {
+    for (MockContainerListener listener : mockContainerListeners) {
       listener.postReleaseContainers(numReleasedContainers);
     }
   }
 
 
   public void registerContainerListener(MockContainerListener listener) {
-    _mockContainerListeners.add(listener);
+    mockContainerListeners.add(listener);
   }
 
   public void clearContainerListeners() {
-    _mockContainerListeners.clear();
+    mockContainerListeners.clear();
   }
 
 }

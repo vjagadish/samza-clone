@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SamzaAppState {
 
-  public enum SamzaAppStatus {UNDEFINED,SUCCEEDED,FAILED}
+  public enum SamzaAppStatus { UNDEFINED, SUCCEEDED, FAILED }
 
   public final JobModelManager jobModelManager;
 

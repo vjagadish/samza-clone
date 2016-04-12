@@ -65,14 +65,14 @@ public class SamzaResource {
   }
 
   public int getMemoryMb() {
-      return memoryMb;
+    return memoryMb;
   }
 
   public String getHost() {
-      return host;
+    return host;
   }
 
   public String getResourceID() {
-      return resourceID;
+    return resourceID;
   }
 }

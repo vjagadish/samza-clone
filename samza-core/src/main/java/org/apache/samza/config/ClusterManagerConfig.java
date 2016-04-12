@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * with the cluster-manager.* configs taking precedence. There will be a deprecated config warning when old configs are used.
  * Later, we'll enforce the new configs.
  */
-public class ClusterManagerConfig extends MapConfig{
+public class ClusterManagerConfig extends MapConfig {
 
   private static final Logger log = LoggerFactory.getLogger(ClusterManagerConfig.class);
 
@@ -101,112 +101,103 @@ public class ClusterManagerConfig extends MapConfig{
   private static final int DEFAULT_CLUSTER_MANAGER_SLEEP_MS = 1000;
 
   public ClusterManagerConfig(Config config) {
-        super(config);
-    }
+      super(config);
+  }
 
   public int getAllocatorSleepTime() {
-    if(containsKey(ALLOCATOR_SLEEP_MS)) {
+    if (containsKey(ALLOCATOR_SLEEP_MS)) {
       return getInt(ALLOCATOR_SLEEP_MS);
-    }
-    else if(containsKey(YARN_ALLOCATOR_SLEEP_MS)) {
+    } else if (containsKey(YARN_ALLOCATOR_SLEEP_MS)) {
       log.info("Configuration {} is deprecated. Please use {}", YARN_ALLOCATOR_SLEEP_MS, ALLOCATOR_SLEEP_MS);
       return getInt(YARN_ALLOCATOR_SLEEP_MS);
+    } else {
+      return DEFAULT_ALLOCATOR_SLEEP_MS;
     }
-    else
-        return DEFAULT_ALLOCATOR_SLEEP_MS;
   }
 
   public int getNumCores() {
-    if(containsKey(CLUSTER_MANAGER_MAX_CORES)) {
+    if (containsKey(CLUSTER_MANAGER_MAX_CORES)) {
       return getInt(CLUSTER_MANAGER_MAX_CORES);
-    }
-    else if(containsKey(CONTAINER_MAX_CPU_CORES)) {
+    } else if (containsKey(CONTAINER_MAX_CPU_CORES)) {
       log.info("Configuration {} is deprecated. Please use {}", CONTAINER_MAX_CPU_CORES, CLUSTER_MANAGER_MAX_CORES);
       return getInt(CONTAINER_MAX_CPU_CORES);
-    }
-    else
+    } else {
       return DEFAULT_CPU_CORES;
+    }
   }
 
   public int getContainerMemoryMb() {
-    if(containsKey(CLUSTER_MANAGER_MEMORY_MB)) {
+    if (containsKey(CLUSTER_MANAGER_MEMORY_MB)) {
       return getInt(CLUSTER_MANAGER_MEMORY_MB);
-    }
-    else if(containsKey(CONTAINER_MAX_MEMORY_MB)) {
+    } else if (containsKey(CONTAINER_MAX_MEMORY_MB)) {
       log.info("Configuration {} is deprecated. Please use {}", CONTAINER_MAX_MEMORY_MB, CLUSTER_MANAGER_MEMORY_MB);
       return getInt(CONTAINER_MAX_MEMORY_MB);
-    }
-    else
+    } else {
       return DEFAULT_CONTAINER_MEM;
-
+    }
   }
 
   public boolean getHostAffinityEnabled() {
-    if(containsKey(CLUSTER_MANAGER_HOST_AFFINITY_ENABLED)) {
+    if (containsKey(CLUSTER_MANAGER_HOST_AFFINITY_ENABLED)) {
       return getBoolean(CLUSTER_MANAGER_HOST_AFFINITY_ENABLED);
-    }
-    else if(containsKey(HOST_AFFINITY_ENABLED)) {
+    } else if (containsKey(HOST_AFFINITY_ENABLED)) {
       log.info("Configuration {} is deprecated. Please use {}", HOST_AFFINITY_ENABLED, CLUSTER_MANAGER_HOST_AFFINITY_ENABLED);
       return getBoolean(HOST_AFFINITY_ENABLED);
-    }
-    else
+    } else {
       return false;
+    }
   }
 
   public int getContainerRequestTimeout() {
-    if(containsKey(CLUSTER_MANAGER_REQUEST_TIMEOUT_MS))
+    if (containsKey(CLUSTER_MANAGER_REQUEST_TIMEOUT_MS)) {
       return getInt(CLUSTER_MANAGER_REQUEST_TIMEOUT_MS);
-    else if(containsKey(CONTAINER_REQUEST_TIMEOUT_MS)) {
+    } else if (containsKey(CONTAINER_REQUEST_TIMEOUT_MS)) {
       log.info("Configuration {} is deprecated. Please use {}", CONTAINER_REQUEST_TIMEOUT_MS, CLUSTER_MANAGER_REQUEST_TIMEOUT_MS);
       return getInt(CONTAINER_REQUEST_TIMEOUT_MS);
-    }
-    else
+    } else {
       return DEFAULT_CONTAINER_REQUEST_TIMEOUT_MS;
     }
+  }
 
   public int getContainerRetryCount() {
-    if(containsKey(CLUSTER_MANAGER_CONTAINER_RETRY_COUNT))
+    if (containsKey(CLUSTER_MANAGER_CONTAINER_RETRY_COUNT))
       return getInt(CLUSTER_MANAGER_CONTAINER_RETRY_COUNT);
-    else if(containsKey(CONTAINER_RETRY_COUNT)) {
+    else if (containsKey(CONTAINER_RETRY_COUNT)) {
       log.info("Configuration {} is deprecated. Please use {}", CONTAINER_RETRY_COUNT, CLUSTER_MANAGER_CONTAINER_RETRY_COUNT);
       return getInt(CONTAINER_RETRY_COUNT);
-    }
-    else {
+    } else {
       return DEFAULT_CONTAINER_RETRY_COUNT;
     }
   }
 
   public int getContainerRetryWindowMs() {
-    if(containsKey(CLUSTER_MANAGER_RETRY_WINDOW_MS))
+    if (containsKey(CLUSTER_MANAGER_RETRY_WINDOW_MS)) {
       return getInt(CLUSTER_MANAGER_RETRY_WINDOW_MS);
-    else if(containsKey(CONTAINER_RETRY_WINDOW_MS)){
+    } else if (containsKey(CONTAINER_RETRY_WINDOW_MS)) {
       log.info("Configuration {} is deprecated. Please use {}", CONTAINER_RETRY_WINDOW_MS, CLUSTER_MANAGER_RETRY_WINDOW_MS);
       return getInt(CONTAINER_RETRY_WINDOW_MS);
-    }
-    else {
+    } else {
       return DEFAULT_CONTAINER_RETRY_WINDOW_MS;
     }
   }
 
 
   public int getJobCoordinatorSleepInterval() {
-      return getInt(CLUSTER_MANAGER_SLEEP_MS, DEFAULT_CLUSTER_MANAGER_SLEEP_MS);
+    return getInt(CLUSTER_MANAGER_SLEEP_MS, DEFAULT_CLUSTER_MANAGER_SLEEP_MS);
   }
 
-  public String getContainerManagerClass()
-  {
-      return get(CLUSTER_MANAGER_FACTORY, CLUSTER_MANAGER_FACTORY_DEFAULT);
+  public String getContainerManagerClass() {
+    return get(CLUSTER_MANAGER_FACTORY, CLUSTER_MANAGER_FACTORY_DEFAULT);
   }
 
   public boolean getJmxEnabled() {
-    if(containsKey(CLUSTER_MANAGER_JMX_ENABLED)) {
+    if (containsKey(CLUSTER_MANAGER_JMX_ENABLED)) {
       return getBoolean(CLUSTER_MANAGER_JMX_ENABLED);
-    }
-    else if(containsKey(AM_JMX_ENABLED)) {
+    } else if (containsKey(AM_JMX_ENABLED)) {
       log.info("Configuration {} is deprecated. Please use {}", AM_JMX_ENABLED, CLUSTER_MANAGER_JMX_ENABLED);
       return getBoolean(AM_JMX_ENABLED);
-    }
-    else
+    } else {
       return true;
+    }
   }
 }
