@@ -24,5 +24,3 @@
 
 exec $(dirname $0)/run-class.sh org.apache.samza.job.yarn.SamzaAppMaster "$@"
 
-#When we want to use the refactored code-path, simply uncomment the below line.
-#exec $(dirname $0)/run-class.sh org.apache.samza.clustermanager.ClusterBasedJobCoordinator "$@"

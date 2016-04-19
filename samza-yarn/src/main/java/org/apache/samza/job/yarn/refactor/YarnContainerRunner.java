@@ -63,7 +63,6 @@ public class YarnContainerRunner {
 
   private final NMClient nmClient;
   private final YarnConfig yarnConfig;
-  private final TaskConfig taskConfig;
 
   /**
    * Create a new Runner from a Config.
@@ -80,7 +79,6 @@ public class YarnContainerRunner {
     nmClient.init(this.yarnConfiguration);
 
     this.yarnConfig = new YarnConfig(config);
-    this.taskConfig = new TaskConfig(config);
   }
 
   /**

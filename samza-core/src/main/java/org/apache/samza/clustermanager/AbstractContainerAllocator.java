@@ -59,7 +59,7 @@ public abstract class AbstractContainerAllocator implements Runnable {
   /**
    * A ClusterResourceManager for the allocator to request for resources.
    */
-  protected final ClusterResourceManager containerProcessManager;
+  protected final ClusterResourceManager clusterResourceManager;
   /**
    * The allocator sleeps for allocatorSleepIntervalMs before it polls its queue for the next request
    */
@@ -82,9 +82,10 @@ public abstract class AbstractContainerAllocator implements Runnable {
 
   public AbstractContainerAllocator(ClusterResourceManager containerProcessManager,
                                     ResourceRequestState resourceRequestState,
-                                    Config config, SamzaAppState state) {
+                                    Config config,
+                                    SamzaAppState state) {
     ClusterManagerConfig clusterManagerConfig = new ClusterManagerConfig(config);
-    this.containerProcessManager = containerProcessManager;
+    this.clusterResourceManager = containerProcessManager;
     this.allocatorSleepIntervalMs = clusterManagerConfig.getAllocatorSleepTime();
     this.resourceRequestState = resourceRequestState;
     this.containerMemoryMb = clusterManagerConfig.getContainerMemoryMb();
@@ -151,7 +152,7 @@ public abstract class AbstractContainerAllocator implements Runnable {
         new Object[]{preferredHost, String.valueOf(expectedContainerId), request.getRequestTimestampMs(), resource.getResourceID()});
     try {
       //launches a StreamProcessor on the resource
-      containerProcessManager.launchStreamProcessor(resource, builder);
+      clusterResourceManager.launchStreamProcessor(resource, builder);
 
       if (state.neededResources.decrementAndGet() == 0) {
         state.jobHealthy.set(true);

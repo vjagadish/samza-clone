@@ -116,7 +116,7 @@ public class ClusterBasedJobCoordinator {
     MetricsRegistryMap registry = new MetricsRegistryMap();
 
     //build a JobModelReader and perform partition assignments.
-    jobModelManager = buildJobModelReader(coordinatorSystemConfig, registry);
+    jobModelManager = buildJobModelManager(coordinatorSystemConfig, registry);
     config = jobModelManager.jobModel().getConfig();
     state = new SamzaAppState(jobModelManager);
     clusterManagerConfig = new ClusterManagerConfig(config);
@@ -196,7 +196,7 @@ public class ClusterBasedJobCoordinator {
     }
   }
 
-  public JobModelManager buildJobModelReader(Config coordinatorSystemConfig, MetricsRegistryMap registry)  {
+  private JobModelManager buildJobModelManager(Config coordinatorSystemConfig, MetricsRegistryMap registry)  {
     JobModelManager jobModelManager = JobModelManager.apply(coordinatorSystemConfig, registry);
     return jobModelManager;
   }
