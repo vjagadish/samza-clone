@@ -22,8 +22,7 @@ package org.apache.samza.job.yarn;
 import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
 import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
-import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
-import org.apache.samza.clustermanager.SamzaAppState;
+import org.apache.samza.clustermanager.SamzaApplicationState;
 import org.apache.samza.coordinator.JobModelManager;
 import org.apache.samza.job.yarn.YarnContainer;
 
@@ -60,7 +59,7 @@ public class YarnAppState {
                       String nodeHost,
                       int nodePort,
                       int nodeHttpPort,
-                      SamzaAppState state) {
+                      SamzaApplicationState state) {
     this.jobModelManager = jobModelManager;
     this.taskId = taskId;
     this.amContainerId = amContainerId;
@@ -91,7 +90,7 @@ public class YarnAppState {
         '}';
   }
 
-  public final SamzaAppState samzaAppState;
+  public final SamzaApplicationState samzaAppState;
    /* The following state variables are primarily used for reference in the AM web services   */
 
   /**

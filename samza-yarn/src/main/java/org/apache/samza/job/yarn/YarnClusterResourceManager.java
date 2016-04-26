@@ -27,7 +27,7 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.samza.SamzaException;
 import org.apache.samza.clustermanager.*;
-import org.apache.samza.clustermanager.SamzaAppState;
+import org.apache.samza.clustermanager.SamzaApplicationState;
 import org.apache.samza.clustermanager.SamzaContainerLaunchException;
 import org.apache.samza.config.Config;
 import org.apache.samza.config.ShellCommandConfig;
@@ -109,7 +109,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
    * @param callback the callback to receive events from Yarn.
    * @param samzaAppState samza app state for display in the UI
    */
-  public YarnClusterResourceManager(Config config, JobModelManager jobModelManager, ClusterResourceManager.Callback callback, org.apache.samza.clustermanager.SamzaAppState samzaAppState ) {
+  public YarnClusterResourceManager(Config config, JobModelManager jobModelManager, ClusterResourceManager.Callback callback, SamzaApplicationState samzaAppState ) {
     super(callback);
     hConfig = new YarnConfiguration();
     hConfig.set("fs.http.impl", HttpFileSystem.class.getName());
@@ -306,7 +306,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
    * TODO: fix this to make stop idempotent?.
    */
   @Override
-  public void stop(SamzaAppState.SamzaAppStatus status) {
+  public void stop(SamzaApplicationState.SamzaAppStatus status) {
     log.info("Stopping AM client " );
     lifecycle.onShutdown(status);
     amClient.stop();

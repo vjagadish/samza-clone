@@ -49,7 +49,7 @@ public class TestHostAwareContainerAllocator {
   private final MockClusterResourceManager manager = new MockClusterResourceManager(callback);
   private final Config config = getConfig();
   private final JobModelManager reader = getJobModelManager(1);
-  private final SamzaAppState state = new SamzaAppState(reader);
+  private final SamzaApplicationState state = new SamzaApplicationState(reader);
   private HostAwareContainerAllocator containerAllocator;
   private final int timeoutMillis = 1000;
   private MockContainerRequestState requestState;

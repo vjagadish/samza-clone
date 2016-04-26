@@ -21,7 +21,7 @@ package org.apache.samza.job.yarn;
 
 import org.apache.samza.clustermanager.ClusterResourceManager;
 import org.apache.samza.clustermanager.ResourceManagerFactory;
-import org.apache.samza.clustermanager.SamzaAppState;
+import org.apache.samza.clustermanager.SamzaApplicationState;
 import org.apache.samza.config.Config;
 import org.apache.samza.coordinator.JobModelManager;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class YarnResourceManagerFactory implements ResourceManagerFactory {
   private static Logger log = LoggerFactory.getLogger(YarnResourceManagerFactory.class);
 
   @Override
-  public ClusterResourceManager getClusterResourceManager(ClusterResourceManager.Callback callback, SamzaAppState state) {
+  public ClusterResourceManager getClusterResourceManager(ClusterResourceManager.Callback callback, SamzaApplicationState state) {
     log.info("Creating an instance of a cluster resource manager for Yarn. ");
     JobModelManager jobModelManager = state.jobModelManager;
     Config config = jobModelManager.jobModel().getConfig();

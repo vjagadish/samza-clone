@@ -33,5 +33,5 @@ public interface ResourceManagerFactory {
    * //TODO: Investigate the possibility a common Samza UI for all cluster managers - Yarn,Mesos,Standalone
    * @return the instantiated {@link ClusterResourceManager}
    */
-  public ClusterResourceManager getClusterResourceManager(ClusterResourceManager.Callback callback, SamzaAppState state);
+  public ClusterResourceManager getClusterResourceManager(ClusterResourceManager.Callback callback, SamzaApplicationState state);
 }

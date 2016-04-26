@@ -73,7 +73,7 @@ public abstract class AbstractContainerAllocator implements Runnable {
   /**
    * State corresponding to num failed containers, running containers etc.
    */
-  protected final SamzaAppState state;
+  protected final SamzaApplicationState state;
 
   /**
    * ContainerRequestState indicates the state of all unfulfilled container requests and allocated containers
@@ -83,7 +83,7 @@ public abstract class AbstractContainerAllocator implements Runnable {
   public AbstractContainerAllocator(ClusterResourceManager containerProcessManager,
                                     ResourceRequestState resourceRequestState,
                                     Config config,
-                                    SamzaAppState state) {
+                                    SamzaApplicationState state) {
     ClusterManagerConfig clusterManagerConfig = new ClusterManagerConfig(config);
     this.clusterResourceManager = containerProcessManager;
     this.allocatorSleepIntervalMs = clusterManagerConfig.getAllocatorSleepTime();

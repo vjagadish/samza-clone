@@ -70,7 +70,7 @@ public class MockClusterResourceManager extends ClusterResourceManager {
   }
 
   @Override
-  public void stop(SamzaAppState.SamzaAppStatus status) {
+  public void stop(SamzaApplicationState.SamzaAppStatus status) {
 
   }
 }

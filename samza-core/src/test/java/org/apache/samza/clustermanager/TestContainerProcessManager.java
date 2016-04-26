@@ -85,7 +85,7 @@ public class TestContainerProcessManager {
 
   private HttpServer server = null;
 
-  private SamzaAppState state = null;
+  private SamzaApplicationState state = null;
 
 
   private JobModelManager getCoordinator(int containerCount) {
@@ -113,7 +113,7 @@ public class TestContainerProcessManager {
   @Before
   public void setup() throws Exception {
     server = new MockHttpServer("/", 7777, null, new ServletHolder(DefaultServlet.class));
-    state = new SamzaAppState(getCoordinator(1));
+    state = new SamzaApplicationState(getCoordinator(1));
   }
 
   private Field getPrivateFieldFromTaskManager(String fieldName, ContainerProcessManager object) throws Exception {
@@ -312,7 +312,7 @@ public class TestContainerProcessManager {
     assertEquals(0, manager.releasedResources.size());
     assertFalse(state.jobHealthy.get());
     assertTrue(taskManager.shouldShutdown());
-    assertEquals(SamzaAppState.SamzaAppStatus.FAILED, state.status);
+    assertEquals(SamzaApplicationState.SamzaAppStatus.FAILED, state.samzaAppStatus);
 
     taskManager.stop();
   }

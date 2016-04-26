@@ -20,7 +20,7 @@
 package org.apache.samza.metrics
 
 import org.apache.samza.SamzaException
-import org.apache.samza.clustermanager.SamzaAppState
+import org.apache.samza.clustermanager.SamzaApplicationState
 import org.apache.samza.config.Config
 import org.apache.samza.config.MetricsConfig.Config2Metrics
 import org.apache.samza.util.{Logging, Util}
@@ -35,9 +35,9 @@ object ContainerProcessManagerMetrics {
  * master state, and converts it to metrics.
  */
 class ContainerProcessManagerMetrics(
-  val config: Config,
-  val state: SamzaAppState,
-  val registry: ReadableMetricsRegistry) extends MetricsHelper  with Logging {
+                                      val config: Config,
+                                      val state: SamzaApplicationState,
+                                      val registry: ReadableMetricsRegistry) extends MetricsHelper  with Logging {
 
   val jvm = new JvmMetrics(registry)
   val reporters = config.getMetricReporterNames.map(reporterName => {

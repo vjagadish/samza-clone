@@ -81,6 +81,7 @@ public abstract class AbstractContainerAllocator implements Runnable {
     while(isRunning.get()) {
       try {
         assignContainerRequests();
+
         // Release extra containers and update the entire system's state
         containerRequestState.releaseExtraContainers();
 

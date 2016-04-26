@@ -67,7 +67,7 @@ public class ClusterBasedJobCoordinator {
   /**
    * State to track container failures, host-container mappings
    */
-  private final SamzaAppState state;
+  private final SamzaApplicationState state;
 
   /**
    * Metrics to track stats around container failures, needed containers etc.
@@ -118,7 +118,7 @@ public class ClusterBasedJobCoordinator {
     //build a JobModelReader and perform partition assignments.
     jobModelManager = buildJobModelManager(coordinatorSystemConfig, registry);
     config = jobModelManager.jobModel().getConfig();
-    state = new SamzaAppState(jobModelManager);
+    state = new SamzaApplicationState(jobModelManager);
     clusterManagerConfig = new ClusterManagerConfig(config);
     isJmxEnabled = clusterManagerConfig.getJmxEnabled();
 

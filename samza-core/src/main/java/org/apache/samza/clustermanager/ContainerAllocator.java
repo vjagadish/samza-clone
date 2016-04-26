@@ -32,7 +32,7 @@ public class ContainerAllocator extends AbstractContainerAllocator {
   private static final Logger log = LoggerFactory.getLogger(ContainerAllocator.class);
 
   public ContainerAllocator(ClusterResourceManager manager,
-                            Config config, SamzaAppState state) {
+                            Config config, SamzaApplicationState state) {
     super(manager, new ResourceRequestState(false, manager), config, state);
   }
 

@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  */
 
-public class SamzaAppState {
+public class SamzaApplicationState {
 
   public enum SamzaAppStatus { UNDEFINED, SUCCEEDED, FAILED }
 
@@ -106,7 +106,7 @@ public class SamzaAppState {
   /**
    * Final status of the application
    */
-  public SamzaAppStatus status = SamzaAppStatus.UNDEFINED;
+  public SamzaAppStatus samzaAppStatus = SamzaAppStatus.UNDEFINED;
 
   /**
    * State indicating whether the job is healthy or not
@@ -118,7 +118,7 @@ public class SamzaAppState {
 
   public final AtomicInteger matchedResourceRequests = new AtomicInteger(0);
 
-  public SamzaAppState(JobModelManager jobModelManager) {
+  public SamzaApplicationState(JobModelManager jobModelManager) {
     this.jobModelManager = jobModelManager;
   }
 }

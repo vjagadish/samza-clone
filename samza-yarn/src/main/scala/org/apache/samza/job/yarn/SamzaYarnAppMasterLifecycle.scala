@@ -23,8 +23,8 @@ import org.apache.hadoop.yarn.api.records.FinalApplicationStatus
 import org.apache.hadoop.yarn.client.api.AMRMClient.ContainerRequest
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync
 import org.apache.samza.SamzaException
-import org.apache.samza.clustermanager.SamzaAppState.SamzaAppStatus
-import org.apache.samza.job.yarn.YarnAppMasterListener
+import org.apache.samza.clustermanager.SamzaApplicationState
+import SamzaApplicationState.SamzaAppStatus
 import org.apache.samza.util.Logging
 
 /**
@@ -50,7 +50,7 @@ class SamzaYarnAppMasterLifecycle(containerMem: Int, containerCpu: Int, state: Y
       shutdownMessage = "The YARN cluster is unable to run your job due to unsatisfiable resource requirements. You asked for mem: %s, and cpu: %s." format (containerMem, containerCpu)
       error(shutdownMessage)
       validResourceRequest = false
-      state.samzaAppState.status = SamzaAppStatus.FAILED;
+      state.samzaAppState.samzaAppStatus = SamzaAppStatus.FAILED;
       state.samzaAppState.jobHealthy.set(false)
     }
   }

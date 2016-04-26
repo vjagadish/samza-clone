@@ -48,7 +48,7 @@ public class TestContainerAllocator {
   private final MockClusterResourceManager manager = new MockClusterResourceManager(callback);
   private final Config config = getConfig();
   private final JobModelManager reader = getJobModelReader(1);
-  private final SamzaAppState state = new SamzaAppState(reader);
+  private final SamzaApplicationState state = new SamzaApplicationState(reader);
   private ContainerAllocator containerAllocator;
   private MockContainerRequestState requestState;
   private Thread allocatorThread;

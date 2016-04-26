@@ -116,7 +116,7 @@ public abstract class ClusterResourceManager {
   public abstract void launchStreamProcessor(SamzaResource resource, CommandBuilder builder) throws SamzaContainerLaunchException;
 
 
-  public abstract void stop(SamzaAppState.SamzaAppStatus status);
+  public abstract void stop(SamzaApplicationState.SamzaAppStatus status);
 
 
   /***

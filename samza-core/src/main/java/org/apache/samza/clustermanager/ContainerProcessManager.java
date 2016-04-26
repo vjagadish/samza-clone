@@ -59,7 +59,7 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
   /**
    * State variables tracking containers allocated, freed, running, released.
    */
-  private final SamzaAppState state;
+  private final SamzaApplicationState state;
 
   /**
    * Config for this Samza job
@@ -97,7 +97,7 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
 
 
   public ContainerProcessManager(Config config,
-                                 SamzaAppState state,
+                                 SamzaApplicationState state,
                                  MetricsRegistryMap registry) {
     this.state = state;
     this.clusterManagerConfig = new ClusterManagerConfig(config);
@@ -122,7 +122,7 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
 
   //package private, used only in tests
   ContainerProcessManager(Config config,
-                          SamzaAppState state,
+                          SamzaApplicationState state,
                           MetricsRegistryMap registry,
                           ClusterResourceManager resourceManager) {
     JobModelManager jobModelManager = state.jobModelManager;
@@ -199,7 +199,7 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
 
     if (clusterResourceManager != null) {
       try {
-        clusterResourceManager.stop(state.status);
+        clusterResourceManager.stop(state.samzaAppStatus);
       } catch (Throwable e) {
         log.error("Exception while stopping cluster resource manager {}", e);
       }
@@ -250,7 +250,7 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
 
         if (state.completedContainers.get() == state.containerCount.get()) {
           log.info("Setting job status to SUCCEEDED, since all containers have been marked as completed.");
-          state.status = SamzaAppState.SamzaAppStatus.SUCCEEDED;
+          state.samzaAppStatus = SamzaApplicationState.SamzaAppStatus.SUCCEEDED;
         }
         break;
 
@@ -335,7 +335,7 @@ public class ContainerProcessManager implements ClusterResourceManager.Callback 
                 // We have too many failures, and we're within the window
                 // boundary, so reset shut down the app master.
                 tooManyFailedContainers = true;
-                state.status = SamzaAppState.SamzaAppStatus.FAILED;
+                state.samzaAppStatus = SamzaApplicationState.SamzaAppStatus.FAILED;
               } else {
                 log.info("Resetting fail count for container ID {} back to 1, since last container failure ({}) for " +
                         "this container ID was outside the bounds of the retry window.", containerId, containerIdStr);

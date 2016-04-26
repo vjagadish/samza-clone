@@ -29,7 +29,7 @@ public class MockContainerAllocator extends ContainerAllocator {
 
   public MockContainerAllocator(ClusterResourceManager manager,
                                 Config config,
-                                SamzaAppState state) {
+                                SamzaApplicationState state) {
     super(manager, config, state);
   }
 

@@ -44,7 +44,7 @@ public class HostAwareContainerAllocator extends AbstractContainerAllocator {
   private final int requestTimeout;
 
   public HostAwareContainerAllocator(ClusterResourceManager manager ,
-                                     int timeout, Config config, SamzaAppState state) {
+                                     int timeout, Config config, SamzaApplicationState state) {
     super(manager, new ResourceRequestState(true, manager), config, state);
     this.requestTimeout = timeout;
   }
