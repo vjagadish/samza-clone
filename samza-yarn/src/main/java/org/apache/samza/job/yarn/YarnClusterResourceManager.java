@@ -370,6 +370,8 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
       clusterManagerCallback.onResourcesAvailable(resources);
   }
 
+  //The below methods are specific to the Yarn AMRM Client. We currently don't handle scenarios where there are
+  //nodes being updated. We always return 0 when asked for progress by Yarn.
   @Override
   public void onShutdownRequest() {
     //not implemented currently.

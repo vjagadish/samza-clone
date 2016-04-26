@@ -87,7 +87,6 @@ public class YarnContainerRunner {
    * @throws SamzaContainerLaunchException  when there's an exception in submitting the request to the RM.
    *
    */
-  //TODO: we don't need samzaContainerId as a param here.
   public void runContainer(int samzaContainerId, Container container, CommandBuilder cmdBuilder) throws SamzaContainerLaunchException {
     String containerIdStr = ConverterUtils.toString(container.getId());
     log.info("Got available container ID ({}) for container: {}", samzaContainerId, container);
