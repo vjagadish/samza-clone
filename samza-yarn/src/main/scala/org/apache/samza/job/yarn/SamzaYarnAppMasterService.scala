@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.samza.job.yarn.refactor
+package org.apache.samza.job.yarn
 
 import org.apache.samza.config.Config
 import org.apache.samza.coordinator.server.HttpServer
@@ -31,7 +31,7 @@ import org.apache.samza.util.Logging
  * dashboards to check on the status of a job. SamzaAppMasterService starts
  * up the web service when initialized.
  */
-class SamzaAppMasterService(config: Config, state: YarnAppState, registry: ReadableMetricsRegistry) extends  Logging {
+class SamzaYarnAppMasterService(config: Config, state: YarnAppState, registry: ReadableMetricsRegistry) extends  Logging {
   var rpcApp: HttpServer = null
   var webApp: HttpServer = null
   val SERVER_URL_OPT: String = "samza.autoscaling.server.url"

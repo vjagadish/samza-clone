@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.samza.job.yarn.refactor;
+package org.apache.samza.job.yarn;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
@@ -35,14 +35,11 @@ import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.security.AMRMTokenIdentifier;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.Records;
-import org.apache.samza.SamzaException;
 import org.apache.samza.clustermanager.SamzaContainerLaunchException;
 import org.apache.samza.config.Config;
 import org.apache.samza.config.JobConfig;
-import org.apache.samza.config.TaskConfig;
 import org.apache.samza.config.YarnConfig;
 import org.apache.samza.job.CommandBuilder;
-import org.apache.samza.job.ShellCommandBuilder;
 import org.apache.samza.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

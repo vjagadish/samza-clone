@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.samza.job.yarn.refactor;
+package org.apache.samza.job.yarn;
 
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.records.*;
@@ -27,6 +27,8 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.samza.SamzaException;
 import org.apache.samza.clustermanager.*;
+import org.apache.samza.clustermanager.SamzaAppState;
+import org.apache.samza.clustermanager.SamzaContainerLaunchException;
 import org.apache.samza.config.Config;
 import org.apache.samza.config.ShellCommandConfig;
 import org.apache.samza.config.YarnConfig;
@@ -86,7 +88,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
    * SamzaAppMasterService is responsible for hosting an AM web UI. This picks up data from both
    * SamzaAppState and YarnAppState.
    */
-  private final SamzaAppMasterService service;
+  private final SamzaYarnAppMasterService service;
 
 
   /**
@@ -107,7 +109,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
    * @param callback the callback to receive events from Yarn.
    * @param samzaAppState samza app state for display in the UI
    */
-  public YarnClusterResourceManager(Config config, JobModelManager jobModelManager, ClusterResourceManager.Callback callback, SamzaAppState samzaAppState ) {
+  public YarnClusterResourceManager(Config config, JobModelManager jobModelManager, ClusterResourceManager.Callback callback, org.apache.samza.clustermanager.SamzaAppState samzaAppState ) {
     super(callback);
     hConfig = new YarnConfiguration();
     hConfig.set("fs.http.impl", HttpFileSystem.class.getName());
@@ -132,7 +134,7 @@ public class YarnClusterResourceManager extends ClusterResourceManager implement
     this.state = new YarnAppState(jobModelManager, -1, containerId, nodeHostString, nodePort, nodeHttpPort, samzaAppState);
 
     log.info("Initialized YarnAppState: {}", state.toString());
-    this.service = new SamzaAppMasterService(config, this.state, registry);
+    this.service = new SamzaYarnAppMasterService(config, this.state, registry);
 
     log.info("ContainerID str {}, Nodehost  {} , Nodeport  {} , NodeHttpport {}", new Object [] {containerIdStr, nodeHostString, nodePort, nodeHttpPort});
     this.lifecycle = new SamzaYarnAppMasterLifecycle(yarnConfig.getContainerMaxMemoryMb(), yarnConfig.getContainerMaxCpuCores(), state, amClient );

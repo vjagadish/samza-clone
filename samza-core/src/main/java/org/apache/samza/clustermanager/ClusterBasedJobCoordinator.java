@@ -82,7 +82,7 @@ public class ClusterBasedJobCoordinator {
   private final ContainerProcessManager containerProcessManager;
 
   /**
-   * A JobModelReader to return and refresh the {@link org.apache.samza.job.model.JobModel} when required.
+   * A JobModelManager to return and refresh the {@link org.apache.samza.job.model.JobModel} when required.
    */
   private final JobModelManager jobModelManager;
 

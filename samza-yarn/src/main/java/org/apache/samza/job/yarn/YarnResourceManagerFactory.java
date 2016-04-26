@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.samza.job.yarn.refactor;
+package org.apache.samza.job.yarn;
 
 import org.apache.samza.clustermanager.ClusterResourceManager;
 import org.apache.samza.clustermanager.ResourceManagerFactory;

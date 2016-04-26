@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.samza.job.yarn.refactor
+package org.apache.samza.job.yarn
 
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus
 import org.apache.hadoop.yarn.client.api.AMRMClient.ContainerRequest
@@ -35,7 +35,7 @@ import org.apache.samza.util.Logging
 class SamzaYarnAppMasterLifecycle(containerMem: Int, containerCpu: Int, state: YarnAppState, amClient: AMRMClientAsync[ContainerRequest]) extends Logging {
   var validResourceRequest = true
   var shutdownMessage: String = null
-  var webApp: SamzaAppMasterService = null
+  var webApp: SamzaYarnAppMasterService = null
   def onInit() {
     val host = state.nodeHost
     val response = amClient.registerApplicationMaster(host, state.rpcUrl.getPort, "%s:%d" format (host, state.trackingUrl.getPort))
