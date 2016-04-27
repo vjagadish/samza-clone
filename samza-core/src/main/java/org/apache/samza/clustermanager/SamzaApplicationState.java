@@ -106,7 +106,7 @@ public class SamzaApplicationState {
   /**
    * Final status of the application
    */
-  public SamzaAppStatus samzaAppStatus = SamzaAppStatus.UNDEFINED;
+  public SamzaAppStatus status = SamzaAppStatus.UNDEFINED;
 
   /**
    * State indicating whether the job is healthy or not

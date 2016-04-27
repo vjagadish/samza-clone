@@ -312,7 +312,7 @@ public class TestContainerProcessManager {
     assertEquals(0, manager.releasedResources.size());
     assertFalse(state.jobHealthy.get());
     assertTrue(taskManager.shouldShutdown());
-    assertEquals(SamzaApplicationState.SamzaAppStatus.FAILED, state.samzaAppStatus);
+    assertEquals(SamzaApplicationState.SamzaAppStatus.FAILED, state.status);
 
     taskManager.stop();
   }

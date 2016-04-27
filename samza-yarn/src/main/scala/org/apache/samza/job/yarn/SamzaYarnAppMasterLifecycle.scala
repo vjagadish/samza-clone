@@ -50,7 +50,7 @@ class SamzaYarnAppMasterLifecycle(containerMem: Int, containerCpu: Int, state: Y
       shutdownMessage = "The YARN cluster is unable to run your job due to unsatisfiable resource requirements. You asked for mem: %s, and cpu: %s." format (containerMem, containerCpu)
       error(shutdownMessage)
       validResourceRequest = false
-      state.samzaAppState.samzaAppStatus = SamzaAppStatus.FAILED;
+      state.samzaAppState.status = SamzaAppStatus.FAILED;
       state.samzaAppState.jobHealthy.set(false)
     }
   }
