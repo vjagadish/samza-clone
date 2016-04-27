@@ -31,6 +31,8 @@ import org.apache.samza.util.Logging
  * dashboards to check on the status of a job. SamzaAppMasterService starts
  * up the web service when initialized.
  */
+//This class is used in the refactored code path as called by run-jc.sh
+
 class SamzaYarnAppMasterService(config: Config, state: YarnAppState, registry: ReadableMetricsRegistry) extends  Logging {
   var rpcApp: HttpServer = null
   var webApp: HttpServer = null

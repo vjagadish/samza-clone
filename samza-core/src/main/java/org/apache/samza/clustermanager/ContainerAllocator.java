@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
  * When host-affinity is not enabled, this periodically wakes up to assign a container to *ANY* allocated resource.
  * If there aren't enough containers, it waits by sleeping for {@code allocatorSleepIntervalMs} milliseconds.
  */
+//This class is used in the refactored code path as called by run-jc.sh
+
 public class ContainerAllocator extends AbstractContainerAllocator {
   private static final Logger log = LoggerFactory.getLogger(ContainerAllocator.class);
 

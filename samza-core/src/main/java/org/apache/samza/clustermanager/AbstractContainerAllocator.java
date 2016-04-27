@@ -41,6 +41,7 @@ import java.util.Map;
  * This class is not thread-safe.
  */
 
+//This class is used in the refactored code path as called by run-jc.sh
 
 public abstract class AbstractContainerAllocator implements Runnable {
 

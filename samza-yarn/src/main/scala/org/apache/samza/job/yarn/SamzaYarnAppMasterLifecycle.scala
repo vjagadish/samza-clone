@@ -32,6 +32,7 @@ import org.apache.samza.util.Logging
  * this means registering and unregistering with the RM, and shutting down
  * when the RM tells us to Reboot.
  */
+//This class is used in the refactored code path as called by run-jc.sh
 class SamzaYarnAppMasterLifecycle(containerMem: Int, containerCpu: Int, state: YarnAppState, amClient: AMRMClientAsync[ContainerRequest]) extends Logging {
   var validResourceRequest = true
   var shutdownMessage: String = null

@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
  *
  * If there aren't enough containers, it waits by sleeping for allocatorSleepIntervalMs milliseconds.
  */
+//This class is used in the refactored code path as called by run-jc.sh
+
 public class HostAwareContainerAllocator extends AbstractContainerAllocator {
   private static final Logger log = LoggerFactory.getLogger(HostAwareContainerAllocator.class);
   /**
