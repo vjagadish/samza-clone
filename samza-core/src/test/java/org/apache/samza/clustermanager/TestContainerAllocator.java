@@ -190,7 +190,7 @@ public class TestContainerAllocator {
 
 
     // Set up our final asserts before starting the allocator thread
-    MockContainerListener listener = new MockContainerListener(3, 2, 0, null, new Runnable() {
+    MockContainerListener listener = new MockContainerListener(3, 2, 0, 0, null, new Runnable() {
       @Override
       public void run() {
 
@@ -203,7 +203,7 @@ public class TestContainerAllocator {
         assertNull(requestState.getResourcesOnAHost("abc"));
         assertNull(requestState.getResourcesOnAHost("def"));
       }
-    }, null);
+    }, null, null);
     requestState.registerContainerListener(listener);
 
     allocatorThread.start();
@@ -229,7 +229,7 @@ public class TestContainerAllocator {
     manager.nextException = new IOException("Cant connect to RM");
 
     // Set up our final asserts before starting the allocator thread
-    MockContainerListener listener = new MockContainerListener(2, 1, 2, null, new Runnable() {
+    MockContainerListener listener = new MockContainerListener(2, 1, 2, 0, null, new Runnable() {
       @Override
       public void run() {
         // The failed container should be released. The successful one should not.
@@ -256,7 +256,7 @@ public class TestContainerAllocator {
             // So there should still be 1 container needed.
             assertEquals(1, state.neededResources.get());
           }
-        }
+        }, null
     );
     state.neededResources.set(1);
     requestState.registerContainerListener(listener);

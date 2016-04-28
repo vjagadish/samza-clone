@@ -33,6 +33,7 @@ public class MockClusterResourceManager extends ClusterResourceManager {
   List<SamzaResource> resourceRequests = new ArrayList<>();
   List<SamzaResourceRequest> cancelledRequests = new ArrayList<>();
   List<SamzaResource> launchedResources = new ArrayList<>();
+  List<MockContainerListener> mockContainerListeners = new ArrayList<MockContainerListener>();
   Throwable nextException = null;
 
   public MockClusterResourceManager(ClusterResourceManager.Callback callback) {
@@ -67,10 +68,23 @@ public class MockClusterResourceManager extends ClusterResourceManager {
       throw new SamzaContainerLaunchException(nextException);
     }
     launchedResources.add(resource);
+    for (MockContainerListener listener : mockContainerListeners) {
+      listener.postRunContainer(launchedResources.size());
+    }
+
   }
 
   @Override
   public void stop(SamzaApplicationState.SamzaAppStatus status) {
 
   }
+
+  public void registerContainerListener(MockContainerListener listener) {
+    mockContainerListeners.add(listener);
+  }
+
+  public void clearContainerListeners() {
+    mockContainerListeners.clear();
+  }
+
 }

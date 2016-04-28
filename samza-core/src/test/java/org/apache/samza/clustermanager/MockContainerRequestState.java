@@ -54,7 +54,7 @@ public class MockContainerRequestState extends ResourceRequestState {
 
     numAddedContainers++;
     for (MockContainerListener listener : mockContainerListeners) {
-      listener.postAddContainer(container, numAddedContainers);
+      listener.postAddContainer(numAddedContainers);
     }
   }
 

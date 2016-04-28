@@ -132,8 +132,7 @@ public class TestHostAwareContainerAllocator {
     final SamzaResource resource1 = new SamzaResource(1, 1024, "abc", "id2");
     final SamzaResource resource2 = new SamzaResource(1, 1024, "def", "id3");
 
-    // Set up our final asserts before starting the allocator thread
-    MockContainerListener listener = new MockContainerListener(3, 2, 0, null, new Runnable() {
+    Runnable releasedAssertions = new Runnable() {
       @Override
       public void run() {
         assertEquals(2, manager.releasedResources.size());
@@ -146,8 +145,10 @@ public class TestHostAwareContainerAllocator {
         assertNull(requestState.getResourcesOnAHost("abc"));
         assertNull(requestState.getResourcesOnAHost("def"));
       }
-    },
-        null);
+    };
+    // Set up our final asserts before starting the allocator thread
+    MockContainerListener listener = new MockContainerListener(3, 2, 0, 0, null, releasedAssertions,
+        null, null);
     requestState.registerContainerListener(listener);
 
     allocatorThread.start();
@@ -204,7 +205,7 @@ public class TestHostAwareContainerAllocator {
     manager.nextException = new IOException("Cant connect to RM");
 
     // Set up our final asserts before starting the allocator thread
-    MockContainerListener listener = new MockContainerListener(2, 1, 2, null, new Runnable() {
+    MockContainerListener listener = new MockContainerListener(2, 1, 2, 0, null, new Runnable() {
       @Override
       public void run() {
         // The failed container should be released. The successful one should not.
@@ -231,7 +232,7 @@ public class TestHostAwareContainerAllocator {
             // So there should still be 1 container needed.
             assertEquals(1, state.neededResources.get());
           }
-        }
+        }, null
     );
     state.neededResources.set(1);
     requestState.registerContainerListener(listener);
@@ -268,7 +269,12 @@ public class TestHostAwareContainerAllocator {
     assertNotNull(requestState.getRequestsToCountMap().get("def"));
     assertTrue(requestState.getRequestsToCountMap().get("def").get() == 1);
 
-    MockContainerListener listener = new MockContainerListener(2, 0, 0, new Runnable() {
+    final SamzaResource resource0 = new SamzaResource(1, 1000, "xyz", "id1");
+    final SamzaResource resource1 = new SamzaResource(1, 1000, "zzz", "id2");
+    containerAllocator.addResource(resource0);
+    containerAllocator.addResource(resource1);
+
+    Runnable addedContainerAssertions = new Runnable() {
       @Override
       public void run() {
         assertNull(requestState.getResourcesOnAHost("xyz"));
@@ -276,25 +282,36 @@ public class TestHostAwareContainerAllocator {
         assertNotNull(requestState.getResourcesOnAHost(ResourceRequestState.ANY_HOST));
         assertTrue(requestState.getResourcesOnAHost(ResourceRequestState.ANY_HOST).size() == 2);
       }
-    }, null, null);
+    };
+
+    Runnable assignedContainerAssertions = new Runnable() {
+      @Override
+      public void run() {
+        assertTrue(manager.launchedResources.contains(resource0));
+        assertTrue(manager.launchedResources.contains(resource1));
+      }
+    };
+
+    Runnable runningContainerAssertions = new Runnable() {
+      @Override
+      public void run() {
+        assertEquals(requestState.numPendingRequests(), 0);
+        assertNotNull(requestState.getRequestsToCountMap());
+        assertNull(requestState.getRequestsToCountMap().get("abc"));
+        assertNull(requestState.getRequestsToCountMap().get("def"));
+      }
+    };
+
+
+        MockContainerListener listener = new MockContainerListener(2, 0, 2, 2, addedContainerAssertions, assignedContainerAssertions, runningContainerAssertions, null);
     requestState.registerContainerListener(listener);
+    ((MockClusterResourceManager) manager).registerContainerListener(listener);
 
     allocatorThread.start();
 
-    SamzaResource resource0 = new SamzaResource(1, 1000, "xyz", "id1");
-    SamzaResource resource1 = new SamzaResource(1, 1000, "zzz", "id2");
-    containerAllocator.addResource(resource0);
-    containerAllocator.addResource(resource1);
     listener.verify();
 
-    Thread.sleep(2000);
-    assertTrue(manager.launchedResources.contains(resource0));
-    assertTrue(manager.launchedResources.contains(resource1));
 
-    assertEquals(requestState.numPendingRequests(), 0);
-    assertNotNull(requestState.getRequestsToCountMap());
-    assertNull(requestState.getRequestsToCountMap().get("abc"));
-    assertNull(requestState.getRequestsToCountMap().get("def"));
 
   }
 
