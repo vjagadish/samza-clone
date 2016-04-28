@@ -269,12 +269,8 @@ public class TestHostAwareContainerAllocator {
     assertNotNull(requestState.getRequestsToCountMap().get("def"));
     assertTrue(requestState.getRequestsToCountMap().get("def").get() == 1);
 
-    final SamzaResource resource0 = new SamzaResource(1, 1000, "xyz", "id1");
-    final SamzaResource resource1 = new SamzaResource(1, 1000, "zzz", "id2");
-    containerAllocator.addResource(resource0);
-    containerAllocator.addResource(resource1);
 
-    Runnable addedContainerAssertions = new Runnable() {
+    MockContainerListener listener = new MockContainerListener(2, 0, 2, 2, new Runnable() {
       @Override
       public void run() {
         assertNull(requestState.getResourcesOnAHost("xyz"));
@@ -282,36 +278,25 @@ public class TestHostAwareContainerAllocator {
         assertNotNull(requestState.getResourcesOnAHost(ResourceRequestState.ANY_HOST));
         assertTrue(requestState.getResourcesOnAHost(ResourceRequestState.ANY_HOST).size() == 2);
       }
-    };
-
-    Runnable assignedContainerAssertions = new Runnable() {
-      @Override
-      public void run() {
-        assertTrue(manager.launchedResources.contains(resource0));
-        assertTrue(manager.launchedResources.contains(resource1));
-      }
-    };
-
-    Runnable runningContainerAssertions = new Runnable() {
-      @Override
-      public void run() {
-        assertEquals(requestState.numPendingRequests(), 0);
-        assertNotNull(requestState.getRequestsToCountMap());
-        assertNull(requestState.getRequestsToCountMap().get("abc"));
-        assertNull(requestState.getRequestsToCountMap().get("def"));
-      }
-    };
-
-
-        MockContainerListener listener = new MockContainerListener(2, 0, 2, 2, addedContainerAssertions, assignedContainerAssertions, runningContainerAssertions, null);
+    }, null, null, null);
     requestState.registerContainerListener(listener);
     ((MockClusterResourceManager) manager).registerContainerListener(listener);
 
     allocatorThread.start();
 
+    SamzaResource resource0 = new SamzaResource(1, 1000, "xyz", "id1");
+    SamzaResource resource1 = new SamzaResource(1, 1000, "zzz", "id2");
+    containerAllocator.addResource(resource0);
+    containerAllocator.addResource(resource1);
     listener.verify();
 
+    assertTrue(manager.launchedResources.contains(resource0));
+    assertTrue(manager.launchedResources.contains(resource1));
 
+    assertEquals(requestState.numPendingRequests(), 0);
+    assertNotNull(requestState.getRequestsToCountMap());
+    assertNull(requestState.getRequestsToCountMap().get("abc"));
+    assertNull(requestState.getRequestsToCountMap().get("def"));
 
   }
 
