@@ -87,8 +87,7 @@ public class MockContainerListener {
    * This method should be called in the main thread. It waits for all the conditions to occur in the other
    * threads and then verifies that they were in fact satisfied.
    */
-  public void verify()
-      throws InterruptedException {
+  public void verify() throws InterruptedException {
     conditionLatch.await(5, TimeUnit.SECONDS);
 
     for (AsyncCountableCondition condition : allConditions) {

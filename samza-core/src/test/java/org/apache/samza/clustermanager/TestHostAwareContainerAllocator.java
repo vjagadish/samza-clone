@@ -254,6 +254,9 @@ public class TestHostAwareContainerAllocator {
 
   @Test
   public void testExpiredRequestHandling() throws Exception {
+    final SamzaResource resource0 = new SamzaResource(1, 1000, "xyz", "id1");
+    final SamzaResource resource1 = new SamzaResource(1, 1000, "zzz", "id2");
+
     Map<Integer, String> containersToHostMapping = new HashMap<Integer, String>() {
       {
         put(0, "abc");
@@ -269,8 +272,7 @@ public class TestHostAwareContainerAllocator {
     assertNotNull(requestState.getRequestsToCountMap().get("def"));
     assertTrue(requestState.getRequestsToCountMap().get("def").get() == 1);
 
-
-    MockContainerListener listener = new MockContainerListener(2, 0, 2, 2, new Runnable() {
+    Runnable addContainerAssertions = new Runnable() {
       @Override
       public void run() {
         assertNull(requestState.getResourcesOnAHost("xyz"));
@@ -278,26 +280,34 @@ public class TestHostAwareContainerAllocator {
         assertNotNull(requestState.getResourcesOnAHost(ResourceRequestState.ANY_HOST));
         assertTrue(requestState.getResourcesOnAHost(ResourceRequestState.ANY_HOST).size() == 2);
       }
-    }, null, null, null);
+    };
+
+    Runnable assignContainerAssertions = new Runnable() {
+      @Override
+      public void run() {
+        assertEquals(requestState.numPendingRequests(), 0);
+        assertNotNull(requestState.getRequestsToCountMap());
+        System.out.println(requestState.getRequestsToCountMap() + " " + Thread.currentThread());
+        assertNotNull(requestState.getRequestsToCountMap().get("abc"));
+        assertNotNull(requestState.getRequestsToCountMap().get("def"));
+      }
+    };
+
+    Runnable runningContainerAssertions = new Runnable() {
+      @Override
+      public void run() {
+        assertTrue(manager.launchedResources.contains(resource0));
+        assertTrue(manager.launchedResources.contains(resource1));
+      }
+    };
+    MockContainerListener listener = new MockContainerListener(2, 0, 2, 2, addContainerAssertions, null, assignContainerAssertions, runningContainerAssertions);
     requestState.registerContainerListener(listener);
     ((MockClusterResourceManager) manager).registerContainerListener(listener);
-
-    allocatorThread.start();
-
-    SamzaResource resource0 = new SamzaResource(1, 1000, "xyz", "id1");
-    SamzaResource resource1 = new SamzaResource(1, 1000, "zzz", "id2");
     containerAllocator.addResource(resource0);
     containerAllocator.addResource(resource1);
+    allocatorThread.start();
+
     listener.verify();
-
-    assertTrue(manager.launchedResources.contains(resource0));
-    assertTrue(manager.launchedResources.contains(resource1));
-
-    assertEquals(requestState.numPendingRequests(), 0);
-    assertNotNull(requestState.getRequestsToCountMap());
-    assertNull(requestState.getRequestsToCountMap().get("abc"));
-    assertNull(requestState.getRequestsToCountMap().get("def"));
-
   }
 
   @After
