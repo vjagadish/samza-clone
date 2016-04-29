@@ -287,7 +287,6 @@ public class TestHostAwareContainerAllocator {
       public void run() {
         assertEquals(requestState.numPendingRequests(), 0);
         assertNotNull(requestState.getRequestsToCountMap());
-        System.out.println(requestState.getRequestsToCountMap() + " " + Thread.currentThread());
         assertNotNull(requestState.getRequestsToCountMap().get("abc"));
         assertNotNull(requestState.getRequestsToCountMap().get("def"));
       }

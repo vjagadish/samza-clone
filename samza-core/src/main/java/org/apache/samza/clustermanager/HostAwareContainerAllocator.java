@@ -71,7 +71,6 @@ public class HostAwareContainerAllocator extends AbstractContainerAllocator {
         log.info("Found a matched-container {} on the preferred host. Running on {}", containerID, preferredHost);
         runStreamProcessor(request, preferredHost);
         state.matchedResourceRequests.incrementAndGet();
-        System.out.println("done matching and running...");
       } else {
         log.info("Did not find any allocated resources on preferred host {} for running container id {}",
             preferredHost, containerID);

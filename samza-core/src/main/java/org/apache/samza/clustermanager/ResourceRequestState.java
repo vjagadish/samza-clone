@@ -176,7 +176,6 @@ public class ResourceRequestState {
    */
   public void updateStateAfterAssignment(SamzaResourceRequest request, String assignedHost, SamzaResource samzaResource) {
     synchronized (lock) {
-      System.out.println("assignedn in updatestateafterassignent ... " + Thread.currentThread());
       requestsQueue.remove(request);
       allocatedResources.get(assignedHost).remove(samzaResource);
       if (hostAffinityEnabled) {
